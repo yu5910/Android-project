@@ -1,0 +1,86 @@
+public class Main {
+    static final int ROWS = 5;
+    static final int COLS = 5;
+    static final int[] dx = {-1, 1, 0, 0};
+    static final int[] dy = {0, 0, -1, 1};
+
+    static class Element {
+        int value;
+        int curX, curY;
+        Element next;
+    }
+
+    static Element[][] path = new Element[ROWS][COLS];
+    static Element cur = path[0][0];
+    static int count = 0;
+
+
+    static boolean isValid(int x, int y) {
+        return (x >= 0 && x < ROWS && y >= 0 && y < COLS);
+    }
+
+    static void printPath() {
+      cur = path[0][0]; 
+
+        while (cur != null) {
+          if(cur.next==null){
+             System.out.printf("(%d, %d)\n", cur.curX, cur.curY);
+            return;
+          }
+            System.out.printf("(%d, %d) -> ", cur.curX, cur.curY);
+            cur = cur.next;
+        }
+        System.out.println();
+        cur = path[0][0]; 
+    }
+
+    static void solveMaze(int[][] maze, int x, int y) {
+        if (!isValid(x, y) || maze[x][y] == 1 || path[x][y].value == 1) {
+            return;
+        }
+        if (x == ROWS - 1 && y == COLS - 1) {
+            count++;
+            System.out.printf("第%d条路径:\n", count);
+            printPath();
+            return;
+        }
+
+        for (int i = 0; i < 4; i++) {
+            path[x][y].value = 1;
+            int newX = x + dx[i];
+            int newY = y + dy[i];
+
+            if (isValid(newX, newY)) {
+               
+                path[x][y].next = path[newX][newY];
+                solveMaze(maze, newX, newY);
+            }
+            path[x][y].value = 0;
+            path[x][y].next = null;
+        }
+    }
+    public static void main(String[] args) {
+        int[][] maze = {
+          {0, 0, 0, 0, 0},
+           {1, 1, 0, 0, 0},
+           {0, 1, 0, 1, 0},
+           {0, 1, 0, 1, 0},
+           {0, 0, 0, 0, 0}
+        };
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLS; j++) {
+                path[i][j] = new Element();
+                path[i][j].next = null;
+                path[i][j].curX = i;
+                path[i][j].curY = j;
+            }
+        }
+        System.out.println("路径:开始！");
+        solveMaze(maze, 0, 0);
+        if (count == 0) {
+            System.out.println("无路可走");
+        } else {
+            System.out.printf("一共%d条路径\n", count);
+        }
+    }
+}
